@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beautiful Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background: #1e1e2f;
+      padding: 30px 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      width: 280px;
+    }
+
+    .display {
+      background: #121224;
+      color: #a3cef1;
+      font-size: 2.5em;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      text-align: right;
+      box-shadow: inset 0 0 10px #4b6cb7;
+      user-select: none;
+      min-height: 60px;
+      word-wrap: break-word;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    button {
+      font-size: 1.4em;
+      padding: 18px 0;
+      border: none;
+      border-radius: 15px;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.1s;
+      user-select: none;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    /* Operator buttons */
+    button.operator {
+      background: linear-gradient(145deg, #ff7e5f, #feb47b);
+      box-shadow: 0 6px 12px #ff7e5f;
+      color: #311b0b;
+      font-weight: 600;
+    }
+    button.operator:hover {
+      background: linear-gradient(145deg, #feb47b, #ff7e5f);
+      box-shadow: 0 8px 20px #feb47b;
+    }
+
+    /* Equal button */
+    button.equal {
+      background: linear-gradient(145deg, #43cea2, #185a9d);
+      box-shadow: 0 6px 12px #43cea2;
+      color: white;
+      font-weight: 700;
+      grid-column: span 1;
+    }
+    button.equal:hover {
+      background: linear-gradient(145deg, #185a9d, #43cea2);
+      box-shadow: 0 8px 20px #185a9d;
+    }
+
+    /* Clear button */
+    button.clear {
+      background: linear-gradient(145deg, #ff416c, #ff4b2b);
+      box-shadow: 0 6px 12px #ff416c;
+      font-weight: 700;
+    }
+    button.clear:hover {
+      background: linear-gradient(145deg, #ff4b2b, #ff416c);
+      box-shadow: 0 8px 20px #ff4b2b;
+    }
+
+    /* Delete button */
+    button.delete {
+      background: linear-gradient(145deg, #9b59b6, #8e44ad);
+      box-shadow: 0 6px 12px #9b59b6;
+      font-weight: 700;
+    }
+    button.delete:hover {
+      background: linear-gradient(145deg, #8e44ad, #9b59b6);
+      box-shadow: 0 8px 20px #8e44ad;
+    }
+
+    /* Number buttons */
+    button.number {
+      background: linear-gradient(145deg, #3a6186, #89253e);
+      box-shadow: 0 6px 12px #89253e;
+      font-weight: 600;
+    }
+    button.number:hover {
+      background: linear-gradient(145deg, #89253e, #3a6186);
+      box-shadow: 0 8px 20px #3a6186;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div id="display" class="display">0</div>
+    <div class="buttons">
+      <button onclick="clearDisplay()" class="clear">C</button>
+      <button onclick="deleteLast()" class="delete">⌫</button>
+      <button onclick="appendValue('/')" class="operator">÷</button>
+      <button onclick="appendValue('*')" class="operator">×</button>
+
+      <button onclick="appendValue('7')" class="number">7</button>
+      <button onclick="appendValue('8')" class="number">8</button>
+      <button onclick="appendValue('9')" class="number">9</button>
+      <button onclick="appendValue('-')" class="operator">−</button>
+
+      <button onclick="appendValue('4')" class="number">4</button>
+      <button onclick="appendValue('5')" class="number">5</button>
+      <button onclick="appendValue('6')" class="number">6</button>
+      <button onclick="appendValue('+')" class="operator">+</button>
+
+      <button onclick="appendValue('1')" class="number">1</button>
+      <button onclick="appendValue('2')" class="number">2</button>
+      <button onclick="appendValue('3')" class="number">3</button>
+      <button onclick="calculate()" class="equal">=</button>
+
+      <button onclick="appendValue('0')" class="number" style="grid-column: span 2;">0</button>
+      <button onclick="appendValue('.')" class="number">.</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function appendValue(value) {
+      if (display.innerText === '0' && value !== '.') {
+        display.innerText = value;
+      } else {
+        // Prevent multiple operators in a row
+        const operators = ['+', '-', '*', '/'];
+        const lastChar = display.innerText.slice(-1);
+        if (operators.includes(value)) {
+          if (operators.includes(lastChar)) {
+            // Replace last operator with new one
+            display.innerText = display.innerText.slice(0, -1) + value;
+            return;
+          }
+        }
+        // Prevent multiple decimals in the current number
+        if (value === '.') {
+          // Split by operators to check current number part
+          const parts = display.innerText.split(/[\+\-\*\/]/);
+          const lastPart = parts[parts.length - 1];
+          if (lastPart.includes('.')) return; // already has a dot
+        }
+        display.innerText += value;
+      }
+    }
+
+    function clearDisplay() {
+      display.innerText = '0';
+    }
+
+    function deleteLast() {
+      if (display.innerText.length === 1 || (display.innerText.length === 2 && display.innerText.startsWith('-'))) {
+        display.innerText = '0';
+      } else {
+        display.innerText = display.innerText.slice(0, -1);
+      }
+    }
+
+    function calculate() {
+      try {
+        // Evaluate expression safely:
+        const result = Function(`"use strict"; return (${display.innerText})`)();
+        display.innerText = Number.isFinite(result) ? result : 'Error';
+      } catch {
+        display.innerText = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
